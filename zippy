@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Made by: Mitchell Jones
+
+function help()
+{
+    echo "Compiles files into a .zip archive quickly."
+    echo "Please run the script providing three arguments:"
+    echo "  - the source of the files to zip"
+    echo "  - the destination to write the zip file too"
+    echo "  - the name of the zip file"
+    echo "EG: zippy -s src -f myArchive"
+    echo "Will zip all files located in the src folder"
+    echo "and place the myArchive.zip archive onto the Desktop."
+}
+
+function options()
+{
+    echo "Usage: zippy <files> [ -s | -f | -l | -h ]"
+    echo "-h -help"
+    echo "-s the location of the java files to zip"
+    echo "-f provide a name for the zip file \(default is src.zip\)"
+    echo "-l location to place the archive \(default is ~/Desktop/\)"
+    echo ""
+}
+
+SOURCE="."
+LOCATION="$HOME/Desktop/"
+NAME="archive"
+
+while getopts :hs:l:f: OPT
+do
+    case "$OPT" in
+        h)
+            help
+            exit
+            ;;
+        s)
+            SOURCE="$OPTARG"
+            ;;
+        l)
+            LOCATION="$OPTARG"
+            ;;
+        f)
+            NAME="$OPTARG"
+            ;;
+        *)
+            echo "ERROR: unknown parameter!"
+            options
+            exit 1
+            ;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+PWD="`pwd`"
+cd $SOURCE
+zip -q $NAME.zip *
+mv $NAME.zip $LOCATION > /dev/null
+cd $PWD
+echo "$NAME.zip written to $LOCATION."
